@@ -91,7 +91,7 @@ fn area(rectangle: &Rectangle) -> u32 {
 fn build_user(email: String, username: String) -> User {
     User {
         email, // field init shorthand
-        username,
+        username:username,
         active: true,
         sign_in_count: 1,
     }
