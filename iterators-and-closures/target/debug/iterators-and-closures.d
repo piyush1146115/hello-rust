@@ -1,0 +1,1 @@
+/Users/piyush.das/go/src/github.com/piyush1146115/hello-rust/iterators-and-closures/target/debug/iterators-and-closures: /Users/piyush.das/go/src/github.com/piyush1146115/hello-rust/iterators-and-closures/src/main.rs
