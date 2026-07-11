@@ -1,0 +1,44 @@
+# Videos related to Async Rust
+
+- [Async Rust explained in 20 minutes](https://www.youtube.com/watch?v=wXtngLBkK4Q&t=23s)
+    - Future, task, and runtime
+    - Future: In Rust Futures are lazy
+    - Task
+    - Task and futures are required for Async runtime to execute
+    - To run a async program, you need an async runtime in Rust. The most popular Async runtime is Tokio
+    - `tokio::spawn()` hands over a task to Tokio runtime
+    - Async runtime is a system that manages the execution of async work
+    - Think async runtime like a manager. It decides which tasks get worked on, in which order, and on which thread. Without it your futures just sit there forever
+    - In javascript and Go, the async runtime is builtin to the language
+    - A task is a future that's been handed to an async runtime and scheduled for execution
+    - A runtime pulls those tasks and drives them forward
+    - Structured Concurrency and Cancellation:
+        - `.await()`: Run futures sequentially inside 1 task.
+        - `.join()`: Run multiple Future
+        - `select!`: Race multiple Futures inside 1 Task
+        - `tokio::join!` vs `await`
+    - Enforcing cancellation safety
+    - Sync <-> Async interop
+        - To move a CPU heavy task to a blocking pool: `tokio::task::spawn_blocking(move || calc_greeks(quotes)).await?;`
+        - Step 1: The root task start on non-blocking thread pool
+        - Step 2: When we hit calc, we call `spawn_blocking`. This offloads CPU heavy work to a separate thread pool for blocking work
+        - Step 3: Root task resume working on the non-blocking work and wait for the blocking work to finish the CPU-heavy task
+
+- [How Rust engineered the perfect async runtime (Tokio)](https://www.youtube.com/watch?v=FUg1y-yv6cs)
+    - A task is Tokio's unit of work. Tasks are tracked from creation to completion. Tasks are ~64 bytes each, where an OS thread is ~1MB. That is 15000+ times smaller than an OS thread. A single process can handle millions of tasks.
+    - Scheduler & Executor:
+        - Scheduler is the task dispatcher
+        - Scheduler picks the task, Executor runs it
+        - The Executor executes tasks scheduled by the scheduler
+        - Work stealing:
+            - Idol threads steal from busy queues
+    - Global and Local Queue
+        - The scheduler has access to two types of queue to schedule the task
+        - Tokio creates one local queue per worker/OS thread
+        - The local queue is one per worker, private. No other thread reads it on the first path
+        - Global queue can be access by all threads, readable by all workers
+        - Global queue catches overflow. Spillover when local queues fill up
+        - Hybrid by design. Local for speed, global for backup
+    - Reactor/IO driver
+        - Bridges tasks and the OS
+        
